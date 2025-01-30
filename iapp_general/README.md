@@ -1,0 +1,1 @@
+The first installment covers discovering the iApps or Application services that have Strict Updates enabled or disabled.  Then an unfiltered command that will edit the Strict Updates setting in all iApps to disabled.
