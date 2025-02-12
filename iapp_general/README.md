@@ -1,6 +1,11 @@
-The first installment covers discovering the iApps or Application services that have Strict Updates enabled or disabled.  
+In the two scripts, we can discover and then change the value of the Strict-Updates setting for all iApps on a system.
 
-A break down of the final command step by step:
+
+> While these are provided as shell script files, they are not intended to be used as full script imported and ran on your BIG-IP
+
+A break down of the [disable](/iapp_general/iapp_strictupdate_disable.sh) command step by step:
+
+> Caution: This script has no filter and will change all of the iApps with the default settings. 
 
 ```bash
 tmsh -c 'cd /; list sys application service recursive one-line all-properties' | grep -E "strict-updates enabled" | awk '{ print "/" $4 }' | xargs -t -I iAppname tmsh modify sys application service iAppname strict-updates disabled
