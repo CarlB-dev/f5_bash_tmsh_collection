@@ -11,11 +11,15 @@ These commands are strictly meant to assess and catalog any items that will need
 
 > These commands **DO NOT** change or modify any objects
 
+[Explanation of commands](/aam_removal/inventory_README.md)
+
 # [Modify and Delete AAM Objects](/aam_removal/aam_objects_modify_or_delete.sh)
 
 These commands will immediately modify and delete AAM objects. The commands do output to the terminal any commands that they ran, for you to capture what was done or to see which command encountered errors.
 
 > **Only use this during a change window**
+
+[Explanation of commands](/aam_removal/modify_delete_README.md)
 
 # [Full library of commands to inventory and modify/delete AAM Objects](/aam_removal/aam_removal_for_upgrades_all.sh)
 
