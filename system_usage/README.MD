@@ -65,22 +65,22 @@ Each script comes with unique use cases. For detailed usage information, refer t
 ### **a) Monitor Analysis**
 - Provides a complete view of all health monitors configured on the system.
 - Ensures **timeout values** are accurate and identifies frequently checked monitors.
-- [Learn More](path/to/monitor_analysis/README.md)
+- [Learn More](/system_usage/monitor_settingREADME.MD)
 
 ### **b) Problematic Monitor Analysis**
 - Focuses on monitors that exhibit **high latency**, frequent failures, or problematic statuses.
 - Useful for finding and fixing **misconfigured or inefficient monitors**.
-- [Learn More](path/to/monitor_instance_analysis/README.md)
+- [Learn More](/system_usage/montor_instance_statsREADME.MD)
 
 ### **c) iRule Performance Analysis**
 - Tracks iRule execution statistics, including **average CPU cycles**, execution counts, and failure rates.
 - Helpful for optimizing resource-heavy iRules.
-- [Learn More](path/to/irule_performance/README.md)
+- [Learn More](/system_usage/irule_statsREADME.MD)
 
 ### **d) Virtual Server Traffic and Resource Usage**
 - Monitors uptime and key traffic metrics for virtual servers, such as **bits in/out** and **CPU usage**.
 - Enables resource prioritization and bottleneck identification.
-- [Learn More](path/to/virtual_server_analysis/README.md)
+- [Learn More](/system_usage/virtualserverusageREADME.MD)
 
 ---
 
