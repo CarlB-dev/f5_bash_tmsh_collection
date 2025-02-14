@@ -1,2 +1,3 @@
-#List all monitors on the device, sorting 
-tmsh -c 'cd /; list ltm monitor recursive' |(echo -e "Monitor_Type Monitor_Name Interval Timeout" &&  awk '/ltm monitor/ {printf $3" /" $4" "} /interval/ {printf $2" "} /timeout/ {printf $2 "\n"}') | column -t | awk 'NR==1; NR>1 {print $0 | "sort -nr -k3"}'
+#List all monitors on the device, sorting by the shortest interval
+#reminder that the timeout should always be three times the interval plus one. ex if the interval is 15, the timeout should be 46
+tmsh -c 'cd /; list ltm monitor recursive' | (echo -e "Monitor_Type|Monitor_Name|Interval|Timeout|Send_String" && awk '/^ltm monitor/ {type=$3; name="/"$4} / interval/ {interval=$2} / timeout/ {timeout=$2} / send/ {send=substr($0, index($0, $2))} /}/ {if (name) printf "%s|%s|%s|%s|%s\n", type, name, interval, timeout, send; type=""; name=""; interval=""; timeout=""; send=""}') | column -ts '|' | awk 'NR==1; NR>1 {print $0 | "sort -n -k3"}'
