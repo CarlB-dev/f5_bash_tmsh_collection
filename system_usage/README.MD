@@ -17,7 +17,7 @@ For detailed information about what each script does and how to use it, refer to
 | `monitor_settingss.sh`             | Lists all monitors on the device, including type, interval, timeout, and send string.                     | [View README](/system_usage/monitor_settingREADME.MDd) |
 | `monitor_instance_stats.sh`    | Identifies problematic monitors (e.g., those with high latency, probe failures, or non-"up" statuses).    | [View README](/system_usage/montor_instance_statsREADME.MD) |
 | `irule_stats.sh`            | Analyzes iRule performance, listing execution frequency, CPU usage, and errors.                           | [View README](/system_usage/irule_statsREADME.MD) |
-| `virtual_server_usage.sh`      | Provides system uptime and detailed performance and traffic metrics for virtual servers.                  | [View README](/system_usage/virtualserverusageREADME.MD)) |
+| `virtual_server_usage.sh`      | Provides system uptime and detailed performance and traffic metrics for virtual servers.                  | [View README](/system_usage/virtualserverusageREADME.MD) |
 
 ---
 
