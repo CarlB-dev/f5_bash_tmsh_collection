@@ -11,13 +11,13 @@ The first set of commands originates from efforts to write [related work](https:
 
 ## Folder Summaries
 
-### [AAM Removal](/aam_removal/README.MD))
+### [AAM Removal](/aam_removal/README.MD)
 A collection of scripts and commands to aid in purging the configuration of Application Acceleration Manager (AAM) objects from an F5 system. 
 
-### [iApp General](/iapp_general/README.MD))
+### [iApp General](/iapp_general/README.MD)
 A library to help identify iApps with strict updates enabled and modify them to allow scripted updates for easier customization and automation.
 
-### [System Usage](/system_usage/README.MD))
+### [System Usage](/system_usage/README.MD)
 Scripts for displaying system usage details, including:
 - Listing all virtual servers, showing traffic and CPU. 
 - iRule statistics
