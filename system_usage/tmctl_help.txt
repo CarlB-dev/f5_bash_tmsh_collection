@@ -1,0 +1,45 @@
+usage: (null) [OPTIONS] [TABLE [COL=VALUE]...]
+
+Inspect and manipulate statistics subsystem.
+
+Supported options:
+   -a, --all            Display all tables.
+   -A, --nolazy         Don't lazily load metadata.  Load all on open.
+   -b, --base=DIR       Set segment directory base path.
+   -c, --csv            Output in CSV format.
+   -C, --columns        Describe the table columns.
+   -d, --dir=DIR        Subscribe to specific directory.
+   -D, --snapshots=DIR  Subscribe to specific snapshots directory.
+   -e, --eval=EXPR      Evaluate expression.
+   -f, --file=PATH      Inspect specific segment file.
+   -g, --dump           Dump the internal state (-gg dumps addresses).
+   -G, --guest=DIR      Synonym for --base=/shared/vmdisks/stats/GUEST.
+   -h, --help           Display this text.
+   -H, --hash           Display the hash index. Requires -f.
+   -i, --internal       Include internal tables.
+   -I, --intermediate   Ignore intermediate key columns during merge.
+   -k, --group=COL,COL  Group by selected columns, comma separated.
+   -K, --sortby=COL,COL Sort by selected columns, comma separated.
+   -l, --locale         Format using system locale.
+   -L, --limit=NUM      Limit the number of rows to display to NUM.
+   -m, --merge=PATH     Merge subscribed segments into one segment file.
+   -n, --number         Count the number of selected rows.
+   -o, --only           Only display internal tables.
+   -O, --order          Reverse the sort order to descending.
+   -p, --performance    Measure query performance.
+   -P, --pivot          Pivot display as property list.
+   -q, --quiet          Don't display headers.
+   -r, --rollup         Merge all selected rows, ignoring keys.
+   -R, --rate=NUM       Limit snapshots to those at NUM seconds.
+   -s, --select=COL,COL Display only selected columns, comma separated.
+                        Append COL with /x to format in hexadecimal.
+   -S, --sort           Sort rows within each table by their keys.
+   -t, --time=NUM       Maximum seconds to allow a query to respond.
+   -T, --category=NAME  Limit snapshots to tables in NAME category.
+   -V, --verify         Verify the file is a valid segment. Requires -f.
+   -w, --wrap=NUM       Wrap output at NUM characters.
+   -W, --write          Write values to a row in a table.
+   -x, --extract=DIR    Extract segments into directory.
+   -X, --export=PATH    Export tables to file.
+   -Y, --import=PATH    Import tables from file.
+   -Z, --zap            Remove a row created using tmctl.
