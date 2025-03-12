@@ -6,3 +6,20 @@ tmctl -lD /shared/tmstat/snapshots/ proc_pid_stat -s rss,time,proc_name proc_nam
 
 # Looking for CPU usage over time of monitoring daemon bigd
 tmctl -lD /shared/tmstat/snapshots/ proc_pid_stat -s cpu_usage_recent,system_usage_recent,time,proc_name,pid proc_name=bigd 2>/dev/null
+
+# looking for uneven distribution of traffic across tmm instances (4tmm example)
+# src - https://my.f5.com/manage/s/article/K91433389
+# Current
+paste <(tmctl -f tmm0 virtual_server_stat --select=name,clientside.cur_conns --sortby=name) <(tmctl -f tmm1 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f tmm2 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f tmm3 virtual_server_stat --select=clientside.cur_conns --sortby=name)
+# Historical since reboot
+paste <(tmctl -f tmm0 virtual_server_stat --select=name,clientside.tot_conns --sortby=name) <(tmctl -f tmm1 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f tmm2 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f tmm3 virtual_server_stat --select=clientside.tot_conns --sortby=name)
+
+# Looking for a TMM that is using more page MEM
+# src - https://my.f5.com/manage/s/article/K000135579
+tmctl -d blade page_stats -s tmid,pages_used,pages_avail | grep -P "\d+" | while read -r line ; do echo $line ; done | awk '{print $1, $2, $3, 100*$2/$3"%"}'
+
+# Looking for current TMM connections
+# src - https://my.f5.com/manage/s/article/K09047561
+tmctl tmm_stat -s slot_id,cpu,client_side_traffic.cur_conns,server_side_traffic.cur_conns
+
+#
