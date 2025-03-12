@@ -32,4 +32,20 @@ tmctl -d blade page_stats -s tmid,pages_used,pages_avail | grep -P "\d+" | while
 # src - https://my.f5.com/manage/s/article/K09047561
 tmctl tmm_stat -s slot_id,cpu,client_side_traffic.cur_conns,server_side_traffic.cur_conns
 
-#
+# Looking for drop of transmission packets
+# src - https://my.f5.com/manage/s/article/K35493303
+tmctl -d /var/tmstat/blade interface_stat -s name,rx_pkts,rx_bytes,rx_hw_drop,tx_pkts,tx_bytes,tx_hw_drop -OK tx_hw_drop
+
+# Looking for total amount of dropped packets per tmm
+# src - https://my.f5.com/manage/s/article/K35493303
+# sort by Dropped packets
+tmctl -d /var/tmstat/blade tmm/iq_tx_stats -OK dropped
+# Sort by interface, dropped packets
+tmctl -d /var/tmstat/blade tmm/iq_tx_stats -K iface,dropped
+# Sort by tmm, dropped packets
+tmctl -d /var/tmstat/blade tmm/iq_tx_stats -K tmm,dropped
+
+# src - https://my.f5.com/manage/s/article/K35493303
+tmctl -d blade tmm/iq_rx_stats | grep "^1" | awk -F" " '{print $3}' | sort -u | wc -l
+tmctl -d blade tmm/iq_tx_stats | grep "^1" | awk -F" " '{print $3}' | sort -u | wc -l
+
