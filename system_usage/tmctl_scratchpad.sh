@@ -49,3 +49,21 @@ tmctl -d /var/tmstat/blade tmm/iq_tx_stats -K tmm,dropped
 tmctl -d blade tmm/iq_rx_stats | grep "^1" | awk -F" " '{print $3}' | sort -u | wc -l
 tmctl -d blade tmm/iq_tx_stats | grep "^1" | awk -F" " '{print $3}' | sort -u | wc -l
 
+# Troubleshooting high mcpd CPU
+# src - https://my.f5.com/manage/s/article/K000139100
+# Current values
+cd /var/tmstat/blade
+tmctl -q -f mcp_stat_segment mcp_transaction_stat -s user,total_transactions,process_time_mean | awk '{use=$2*$3; print $0"   "use}' | sort -k 4 -rn | head -3
+
+# Top 3
+tmctl -f mcp_stat_segment mcp_transaction_stat -s user,total_transactions,process_time_mean -OK total_transactions -L 3
+
+# Looking at historical snapshot data
+# Change directory to /shared/tmstat/snapshots/blade0/public/3600 (or 86400). On a multi-blade capable system replace blade0 with the primary blade number, often 1.
+cd /shared/tmstat/snapshots/blade0/public/3600
+# Pick a snapshot file and put in place of <blade0-public-3600-20XX-XX-XXTXX:00:00> placeholder below
+tmctl -q -f  <blade0-public-3600-20XX-XX-XXTXX:00:00> mcp_transaction_stat -s user,total_transactions,process_time_mean -OK total_transactions | awk '{use=$2*$3; print $0"   "use}' | sort -k 4 -rn | head -3
+# You can also see how this is increasing over time in the snapshot files:
+# Note: In this example we are looking at SNMP transactions over time. You can use this for any other process. You may need to change user=snmpd, to user=%snmpd
+# You are still executing this in the snapshot directory previously selected.
+tmctl -D . mcp_transaction_stat -s time,user,total_transactions,process_time_mean user=snmpd | awk '/^2/{p3 ? delta=($3-p3)*$4 : delta=""; p3=$3; print $0"   "delta;next}{print $0}'
