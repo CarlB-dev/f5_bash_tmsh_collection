@@ -18,11 +18,10 @@ tmctl -lD /shared/tmstat/snapshots/ proc_pid_stat -s cpu_usage_recent,system_usa
 
 # looking for uneven distribution of traffic across tmm instances (4tmm example)
 # src - https://my.f5.com/manage/s/article/K91433389
-cd /var/tmstat/blade
 # Current
-paste <(tmctl -f tmm0 virtual_server_stat --select=name,clientside.cur_conns --sortby=name) <(tmctl -f tmm1 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f tmm2 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f tmm3 virtual_server_stat --select=clientside.cur_conns --sortby=name)
+paste <(tmctl -f /var/tmstat/blade/tmm0 virtual_server_stat --select=name,clientside.cur_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm1 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm2 virtual_server_stat --select=clientside.cur_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm3 virtual_server_stat --select=clientside.cur_conns --sortby=name)
 # Historical since reboot
-paste <(tmctl -f tmm0 virtual_server_stat --select=name,clientside.tot_conns --sortby=name) <(tmctl -f tmm1 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f tmm2 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f tmm3 virtual_server_stat --select=clientside.tot_conns --sortby=name)
+paste <(tmctl -f /var/tmstat/blade/tmm0 virtual_server_stat --select=name,clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm1 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm2 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm3 virtual_server_stat --select=clientside.tot_conns --sortby=name)
 
 # Looking for a TMM that is using more page MEM
 # src - https://my.f5.com/manage/s/article/K000135579
