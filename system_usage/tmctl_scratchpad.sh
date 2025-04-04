@@ -23,6 +23,9 @@ paste <(tmctl -f /var/tmstat/blade/tmm0 virtual_server_stat --select=name,client
 # Historical since reboot
 paste <(tmctl -f /var/tmstat/blade/tmm0 virtual_server_stat --select=name,clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm1 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm2 virtual_server_stat --select=clientside.tot_conns --sortby=name) <(tmctl -f /var/tmstat/blade/tmm3 virtual_server_stat --select=clientside.tot_conns --sortby=name)
 
+# Virtual Servers showing clientside bytes in and recent CPU 
+paste <(tmctl virtual_server_stat --select=name,clientside.bytes_in --sortby=name) <(tmctl virtual_server_cpu_stat --select=avg_5sec,avg_1min,avg_5min --sortby=name) 
+
 # Looking for a TMM that is using more page MEM
 # src - https://my.f5.com/manage/s/article/K000135579
 tmctl -d blade page_stats -s tmid,pages_used,pages_avail | grep -P "\d+" | while read -r line ; do echo $line ; done | awk '{print $1, $2, $3, 100*$2/$3"%"}'
@@ -53,8 +56,8 @@ tmctl -d blade tmm/iq_tx_stats | grep "^1" | awk -F" " '{print $3}' | sort -u | 
 # Current values
 tmctl -q -f /var/tmstat/blade/mcp_stat_segment mcp_transaction_stat -s user,total_transactions,process_time_mean | awk '{use=$2*$3; print $0"   "use}' | sort -k 4 -rn | head -3
 
-# Top 3
-tmctl -f /var/tmstat/blade/mcp_stat_segment mcp_transaction_stat -s user,total_transactions,process_time_mean -OK total_transactions -L 3
+# Top 10
+tmctl -f /var/tmstat/blade/mcp_stat_segment mcp_transaction_stat -s user,total_transactions,process_time_mean -OK total_transactions -L 10
 
 # Looking at historical snapshot data
 # Change directory to /shared/tmstat/snapshots/blade0/public/3600 (or 86400). On a multi-blade capable system replace blade0 with the primary blade number, often 1.
