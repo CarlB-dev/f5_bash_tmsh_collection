@@ -8,4 +8,10 @@ tmsh -q -c "cd /; list ltm virtual recursive one-line" | awk '{print "/"$3}' | w
 # Pools - 
 # Pools that have not received any inbound data since the device starting collecting statistics
 tmsh -q -c "cd /; list ltm pool recursive one-line" | awk '{print "/"$3}' | while read pool; do if [ "$(tmsh show ltm pool $pool field-fmt raw | grep 'serverside.bits-in' | awk '{print $2}')" -eq 0 ]; then echo $pool; fi; done
-# WORK IN PROGRESS - we will look at them from a few angles, available members, pick count, etc
+# Pools that have not been picked 
+tmctl pool_stat -s pool_name,pick_tot | awk 'NR <= 2 {print; next} $1 ~ /^\// && $2 == 0'
+
+
+# Pool members sorted by bytes_in
+# Due to how the address is stored, we have to do a conversion.
+tmctl pool_member_stat -s pool_name,addr,serverside.bytes_in -K serverside.bytes_in -O -w 300 | awk 'NR <= 2 {print; next} $1 ~ /^\// && $3 == 0 { split($2, p, ":") ip=sprintf("%d.%d.%d.%d", strtonum("0x"p[13]), strtonum("0x"p[14]), strtonum("0x"p[15]), strtonum("0x"p[16])) printf "%-30s %-59s %-5s -- No traffic detected\n", $1, ip, $3 }'
