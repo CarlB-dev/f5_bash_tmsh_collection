@@ -22,4 +22,4 @@ tmsh -c 'cd /; list ltm profile tcp recursive one-line' | grep -E "defaults-from
 tmsh -c 'cd /; list ltm profile web-acceleration recursive one-line' | grep -E "applications {" | awk '{ print "/" $4 }' | xargs -t -I wa_profile tmsh modify ltm profile web-acceleration wa_profile applications none
 
 ### Command to Delete AM (Acceleration Manager) objects
-tmsh -c 'cd /; list wam application recursive one-line' | awk '{ print "/" $3 }' | xargs-t -I wam_app tmsh delete wam application wam_app
+tmsh -c 'cd /; list wam application recursive one-line' | awk '{ print "/" $3 }' | xargs -t -I wam_app tmsh delete wam application wam_app
