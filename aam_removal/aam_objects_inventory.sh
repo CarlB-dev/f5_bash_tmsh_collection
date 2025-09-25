@@ -33,6 +33,17 @@ tmsh -c 'cd /; list ltm profile tcp recursive one-line' | grep -E "defaults-from
 ## Command to Identify Web-acceleration Profiles with AM (Acceleration Manager) Applications defined 
 tmsh -c 'cd /; list ltm profile web-acceleration recursive one-line' | grep -E "applications {" | awk '{ print "/" $4 }'
 
+## Command to identify web-acceleration profiles with optimized-acceleration Parent Profiles
+# WIP Not ready for production use
+tmsh -c 'cd /; list ltm profile web-acceleration recursive one-line' | grep -E "defaults-from /Common/optimized-acceleration" | awk '{ print "/" $4 }'
+
+
 ## Command to Identify AM (Acceleration Manager) objects
 tmsh -c 'cd /; list wam application recursive one-line' | awk '{ print "/" $3 }'
 
+## Optional Command to Identify ALL Profiles with WAM/WOM-Based Parent Profiles and their inheritance chain
+###4 Command to Modify TCP Profiles with WAM/WOM-Based Parent Profiles (LAN Context)
+tmsh -c 'cd /; list ltm profile tcp recursive one-line' | grep -E "defaults-from.Common.w(a|o)m-tcp-lan*" | awk '{ print "/" $4 }' | xargs -t -I tcp_profile tmsh modify ltm profile tcp tcp_profile defaults-from f5-tcp-lan
+
+###5 Command to Modify TCP Profiles with WAM/WOM-Based Parent Profiles (WAN Context)
+tmsh -c 'cd /; list ltm profile tcp recursive one-line' | grep -E "defaults-from.Common.w(a|o)m-tcp-wan*" | awk '{ print "/" $4 }' | xargs -t -I tcp_profile tmsh modify ltm profile tcp tcp_profile defaults-from f5-tcp-wan
