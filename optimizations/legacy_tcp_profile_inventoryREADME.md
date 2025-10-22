@@ -77,7 +77,7 @@ Some virtual servers, as shown above, may include `.app` in their names, indicat
    ```shell
    tmsh modify sys application service <iApp-name> strict-updates disabled
    ```
-3. Once the inventory is complete, consider using the [Replace Default TCP Profile with Optimized F5 Profiles](https://github.com/YourRepositoryLinkHere) script to perform the updates.
+3. Once the inventory is complete, consider using the [Replace Default TCP Profile with Optimized F5 Profiles](legacy_tcp_profile_updateREADME.md) script to perform the updates.
 
 ## Prerequisites
 
