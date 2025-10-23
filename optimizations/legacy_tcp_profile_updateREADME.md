@@ -1,19 +1,35 @@
-# Replace Default TCP Profile with Optimized F5 Profiles
+# Replace Legacy `tcp { }` Profile with Optimized F5 Profiles
 
-This repository contains a script to automate the process of identifying and replacing the default `tcp` profile (`tcp { }`) in F5 BIG-IP virtual servers with the optimized `f5-tcp-wan` profile for client-side connections and the `f5-tcp-lan` profile for server-side connections. This script operates across **all virtual servers** in **all partitions**.
+This repository provides a script that automates the process of replacing the legacy `tcp { }` profile on F5 BIG-IP virtual servers with optimized F5 profiles. The script is designed to improve both WAN and LAN network performance by leveraging `f5-tcp-wan`, `f5-tcp-progressive`, and `f5-tcp-lan` profiles.
 
-## Overview
+---
 
-The `tcp { }` profile is often a legacy or default configuration that might not be optimal for all environments, particularly when optimizing for client and server communication. This script ensures that:
-- `f5-tcp-wan` is applied to **client-side (clientside)** traffic.
-- `f5-tcp-lan` is applied to **server-side (serverside)** traffic.
+## Features
 
-These profiles provide transport layer optimization for WAN and LAN connectivity, improving overall network throughput and minimizing latency bottlenecks.
+This script identifies and replaces the default legacy `tcp { }` profile assigned to both client-side and server-side connections in your virtual servers. Some key features include:
 
-## Script
+- **Global Updates**: Automatically updates every non-iApp-created virtual server across all partitions that uses the `tcp { }` profile.
+- **Customizable Profiles**: By default, this script replaces `tcp { }` with `f5-tcp-wan` for client-side and `f5-tcp-lan` for server-side profiles, but it also supports using `f5-tcp-progressive` as a client-side alternative.
+- **Targeted Updates**: Includes commands for updating a specific virtual server if needed (see below for examples).
 
-The script is as follows:
+---
 
+## How It Works
+
+### Script Overview
+
+The script works as follows:
+1. Automatically identifies all virtual servers using the default `tcp { }` profile by listing all virtual servers across all partitions of your F5 BIG-IP and then filtering for the default `tcp { }` profile configuration.
+2. Once a match is found, the script iterates through and updates the profiles for all identified virtual servers:
+   - Deletes the legacy `tcp { }` profile.
+   - Adds either:
+     - **f5-tcp-wan** (optimized for client-side WAN connections).
+     - **f5-tcp-progressive** (dynamically adjusts TCP settings for adaptive networking environments).
+   - Always applies **f5-tcp-lan** (optimized for server-side LAN connections).
+
+### Scripts
+
+#### Update All Non-iApp Virtual Servers to Use `f5-tcp-wan`
 ```shell
 tmsh -c 'cd /; list ltm virtual recursive one-line' | \
 grep -E "profiles.*tcp \{ \}" | \
@@ -23,85 +39,120 @@ profiles add { f5-tcp-wan { context clientside } f5-tcp-lan { context serverside
 profiles delete { tcp }
 ```
 
-## How It Works
+#### Update All Non-iApp Virtual Servers to Use `f5-tcp-progressive`  
+In cases where traffic performance issues arise with `f5-tcp-wan`, consider using `f5-tcp-progressive` for client-side traffic. However, note that it can lead to increased CPU usage. The alternative script is provided below:
+```shell
+tmsh -c 'cd /; list ltm virtual recursive one-line' | \
+grep -E "profiles.*tcp \{ \}" | \
+awk '{print "/" $3}' | \
+xargs -t -I vsName tmsh modify ltm virtual vsName \
+profiles add { f5-tcp-progressive { context clientside } f5-tcp-lan { context serverside } } \
+profiles delete { tcp }
+```
 
-1. **Locate Virtual Servers**:  
-   The script uses `tmsh` to list all virtual servers recursively across all partitions in a one-line format (`list ltm virtual recursive one-line`).
+---
 
-2. **Filter for TCP Profile**:  
-   It then filters the results, identifying virtual servers that use the exact `tcp { }` profile in their configuration. This is achieved through the pattern-matching utility `grep`.
+### Targeted Updates for a Single Virtual Server
 
-3. **Extract Virtual Server Names**:  
-   Using `awk`, the script parses and extracts the names of the virtual servers to identify where the `tcp` profile is applied.
+If you want to update a single virtual server instead of globally applying profile changes, use one of the following examples:
 
-4. **Update Profiles**:  
-   For each virtual server using the `tcp { }` profile:
-   - Deletes the default `tcp` profile.
-   - Adds the optimized `f5-tcp-wan` profile for **client-side** traffic.
-   - Adds the optimized `f5-tcp-lan` profile for **server-side** traffic.
+#### Use `f5-tcp-wan` for Client-Side:
+```shell
+tmsh modify ltm virtual <Virtual Server Name> \
+profiles add { f5-tcp-wan { context clientside } f5-tcp-lan { context serverside } } \
+profiles delete { tcp }
+```
+
+#### Use `f5-tcp-progressive` for Client-Side:
+```shell
+tmsh modify ltm virtual <Virtual Server Name> \
+profiles add { f5-tcp-progressive { context clientside } f5-tcp-lan { context serverside } } \
+profiles delete { tcp }
+```
+
+_Replace `<Virtual Server Name>` with the name of the virtual server you want to target (e.g., `/Common/my-virtual-server`)._
+
+---
 
 ## Prerequisites
 
-Before running this script, ensure the following:
-- You have administrative access to your F5 BIG-IP system.
-- The `f5-tcp-wan` and `f5-tcp-lan` profiles are preconfigured and available on your BIG-IP system.
-- The script is executed by a user with necessary permissions to modify virtual servers on the BIG-IP system.
-- You have taken a backup of the system configuration. Run the following command to do so:
-  ```shell
-  tmsh save sys ucs /var/local/ucs/backup.ucs
-  ```
+Before running the script, ensure the following steps have been completed:
 
-## Usage
-
-1. Log into the F5 BIG-IP system via SSH.
-2. Copy the script to the F5 device or execute the commands directly on the CLI interface.
-3. Run the script:
+1. **Backup Configuration**:  
+   Create a backup of your F5 BIG-IP system configuration:
    ```shell
-   tmsh -c 'cd /; list ltm virtual recursive one-line' | grep -E "profiles.*tcp \{ \}" | awk '{print "/" $3}' | xargs -t -I vsName tmsh modify ltm virtual vsName profiles add { f5-tcp-wan { context clientside } f5-tcp-lan { context serverside } } profiles delete { tcp }
+   tmsh save sys ucs /var/local/ucs/backup.ucs
    ```
 
-## Example Output
+2. **Verify Profiles**:  
+   Ensure that the `f5-tcp-wan`, `f5-tcp-progressive`, and `f5-tcp-lan` profiles are preconfigured in your F5 BIG-IP environment. These profiles are essential for the script to work properly.
 
-When the script runs, you will see output like the following:
-```
-tmsh modify ltm virtual /Common/my-virtual-server profiles add { f5-tcp-wan { context clientside } f5-tcp-lan { context serverside } } profiles delete { tcp }
-tmsh modify ltm virtual /Common/another-virtual-server profiles add { f5-tcp-wan { context clientside } f5-tcp-lan { context serverside } } profiles delete { tcp }
-```
+3. **iApp Considerations**:  
+   If any virtual server names include `.app`, they were likely created with an iApp. To make changes to these virtual servers, you will first need to disable strict updates for the iApp:
+   ```shell
+   tmsh modify sys application service <iApp-name> strict-updates disabled
+   ```
 
-This output shows the virtual servers (`/Common/my-virtual-server`, `/Common/another-virtual-server`, etc.) being updated to use the new profiles.
+4. **Permissions**:  
+   Ensure you have administrative privileges on the F5 BIG-IP system.
 
-## Limitations
-
-- The script applies only to virtual servers that explicitly use the `tcp { }` profile. Virtual servers using other, custom TCP profiles will not be affected.
-- Ensure `f5-tcp-wan` and `f5-tcp-lan` profiles are implemented correctly and suit your environment's requirements.
+---
 
 ## Testing & Validation
 
-1. **Dry Run (Optional)**:  
-   Run the script without the `xargs` part to identify which virtual servers (with the `tcp { }` profile) will be affected:
+1. **Preview Targeted Virtual Servers (Optional)**:  
+   Run the following to see which virtual servers currently use the default `tcp { }` profile and will be targeted by the script:
    ```shell
-   tmsh -c 'cd /; list ltm virtual recursive one-line' | grep -E "profiles.*tcp \{ \}" | awk '{print "/" $3}'
+   tmsh -c 'cd /; list ltm virtual recursive one-line' | \
+   grep -E "profiles.*tcp \{ \}" | \
+   awk '{print "/" $3}'
    ```
 
-2. **Verify Configuration**:  
-   After running the script, validate the changes by listing the specific virtual server's profiles:
+2. **Post-Execution Verification**:  
+   Verify that the profiles have been successfully updated for individual virtual servers:
    ```shell
-   tmsh list ltm virtual vsName profiles
+   tmsh list ltm virtual <Virtual Server Name> profiles
    ```
-   Replace `vsName` with the name of the virtual server being verified. Ensure that:
-   - `f5-tcp-wan` is listed under `clientside`.
-   - `f5-tcp-lan` is listed under `serverside`.
+   Ensure that:
+   - The `f5-tcp-wan` or `f5-tcp-progressive` profile is applied to the client-side.
+   - The `f5-tcp-lan` profile is applied to the server-side.
 
-3. **Backup Configuration**:  
-   Verify the system functionality and save the configuration:
+3. **Save Configuration**:  
+   Persist the updated configuration:
    ```shell
    tmsh save sys config
    ```
 
-## Contributing
+---
 
-If you find issues or have suggestions for enhancing the script, feel free to submit a pull request or open an issue in this repository.
+## Further Resources
+
+For more information about the optimized profiles and their use cases, refer to these official F5 Knowledge Base articles:
+
+1. **Overview of f5-tcp-wan**:  
+   👉 [Overview of f5-tcp-wan](https://my.f5.com/manage/s/article/K10281257)
+
+2. **Overview of f5-tcp-progressive**:  
+   👉 [Overview of f5-tcp-progressive](https://my.f5.com/manage/s/article/K15800216)
+
+3. **When to Use f5-tcp-progressive**:  
+   If traffic shows slow performance with `f5-tcp-wan`, consider switching to `f5-tcp-progressive`. Note that this may result in higher CPU usage.  
+   👉 [Optimized TCP Traffic Profiles for Your Environment](https://my.f5.com/manage/s/article/K000130654)
+
+---
+
+## Notes & Best Practices
+
+1. Use `f5-tcp-wan` for environments optimized for WAN traffic.
+2. If performance issues occur when using `f5-tcp-wan`, switch to `f5-tcp-progressive`. Be cautious as this may increase CPU usage.
+3. Always perform testing in a lab environment before deploying changes to production systems.
+
+---
 
 ## Disclaimer
 
-This script modifies the configuration of your F5 BIG-IP system. Use it with caution in production environments. Always test the script in a development or lab environment before deploying it to production. Backup the configuration before making any modifications. The authors are not responsible for any unintended consequences arising from its use.
+This script modifies the configuration of your F5 BIG-IP system. Always ensure you have tested the script in a development or staging environment before applying it to production. Backup your configuration beforehand. The authors of this script assume no liability for any issues or downtime caused by its use.
+
+---
+
+Thank you for using the **Optimization Scripts** repository! 🚀
