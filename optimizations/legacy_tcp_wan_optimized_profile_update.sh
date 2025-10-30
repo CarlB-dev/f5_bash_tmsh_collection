@@ -14,4 +14,4 @@ tmsh modify ltm virtual <Virtual Server Name> profiles add { f5-tcp-progressive 
 tmsh -c 'cd /; list ltm virtual recursive one-line' | grep -E "profiles.*f5-tcp-wan " | awk '{print "/" $3}' | xargs -t -I vsName tmsh modify ltm virtual vsName profiles add { f5-tcp-progressive { context clientside } } profiles delete { f5-tcp-wan }
 
 ### Targeting a single virtual server example to replace f5-tcp-wan with f5-tcp-progressive
-tmsh modify ltm virtual <Virtual Server Name> profiles add { f5-tcp-progressive { context clientside } } profiles delete { f5-tcp-wan } 
+tmsh modify ltm virtual <Virtual Server Name> profiles add { f5-tcp-progressive { context clientside } } profiles delete { f5-tcp-wan }
