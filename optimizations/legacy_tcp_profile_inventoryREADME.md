@@ -3,8 +3,12 @@
 This repository contains a script to identify virtual servers on an F5 BIG-IP system that have the legacy `tcp { }` profile assigned to both client-side and server-side traffic. This is a **discovery tool** designed for inventory or change management purposes. It provides a list of virtual servers using the `tcp { }` profile, which may require further action to replace them with optimized TCP profiles.
 
 ## Overview
-
 The `tcp { }` profile is a legacy or default configuration. It is often advisable to replace this profile with optimized profiles like `f5-tcp-wan` and `f5-tcp-lan` to improve performance. However, before performing the change, discovering the virtual servers using this profile is a vital step in the change management process. This script helps you find these virtual servers.
+
+To learn more about why you should consider replacing the default `tcp { }` profile and the benefits of using the newer profiles, refer to the following supporting articles:
+- [Stop Using the Base TCP Profile](https://community.f5.com/kb/technicalarticles/stop-using-the-base-tcp-profile/290793)
+- [F5 Unveils New Built-In TCP Profiles](https://community.f5.com/kb/technicalarticles/f5-unveils-new-built-in-tcp-profiles/290729)
+- [Replacing the Default TCP Profile: Best Practices](https://my.f5.com/manage/s/article/K31143831)
 
 ### Important Note:
 If any of the virtual server names in the output contain `.app`, those virtual servers were likely created using an **iApp** template. Modifications to these virtual servers may require **disabling strict updates** for the corresponding iApp configuration. Be sure to account for iApp-managed virtual servers during any change execution.
